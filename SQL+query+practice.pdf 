@@ -1,0 +1,1531 @@
+
+
+--------SQL Server Built-in Functions
+
+-- session-4
+
+---Date and Time Data Types
+use SampleRetail
+
+CREATE TABLE t_date_time (
+	A_time time,
+	A_date date,
+	A_smalldatetime smalldatetime,
+	A_datetime datetime,
+	A_datetime2 datetime2,
+	A_datetimeoffset datetimeoffset
+	)
+
+SELECT *
+FROM	t_date_time
+
+SELECT GETDATE()
+SELECT 1 AS NUM
+
+INSERT t_date_time 
+VALUES (GETDATE(),GETDATE(),GETDATE(),GETDATE(),GETDATE(),GETDATE())
+
+SELECT CAST (GETDATE() AS DATETIME2)
+
+INSERT t_date_time
+VALUES ('2022-10-21', '2022-10-21', '2022-10-21','2022-10-21','2022-10-21','2022-10-21')
+
+SELECT *
+FROM	t_date_time
+
+
+-----------
+--Datename, datepart, day, month, year
+
+SELECT DATENAME(DAY, GETDATE())
+SELECT DATENAME(DAYOFYEAR, GETDATE())
+SELECT DATEPART(DAYOFYEAR, GETDATE())
+SELECT DATEPART(DW, GETDATE())
+SELECT DATENAME(DW, GETDATE())
+SELECT DATENAME(HOUR, GETDATE())
+SELECT DAY(GETDATE()), MONTH(GETDATE()), YEAR(GETDATE())
+SELECT GETDATE()
+----------------------
+--DATEDIFF
+
+SELECT DATEDIFF(HOUR, '2022-10-21', '2022-10-29')
+
+SELECT	order_id, order_date, shipped_date, DATEDIFF(DAY, order_date, shipped_date) as day_diff
+FROM	sale.orders
+
+---DATEADD, EOMONTH
+
+SELECT DATEADD( DAY, 3, GETDATE())
+SELECT DATEADD(MINUTE, 10, GETDATE())
+SELECT GETDATE()
+SELECT EOMONTH (GETDATE())
+SELECT EOMONTH (GETDATE(), 5)
+SELECT GETDATE()
+
+------------------
+---ISDATE
+
+SELECT ISDATE('2022-10-21')
+SELECT ISDATE('20221021')
+SELECT ISDATE('21/10/2022')
+SELECT ISDATE('2022/10/21')
+-------------------------
+
+--Write a query returns orders that are shipped more than two days after the order date. 
+--sipari� tarihinden iki g�n sonra sevk edilen sipari�leri d�nd�r�r.
+
+SELECT	order_id, order_date, shipped_date
+FROM	sale.orders
+WHERE	DATEDIFF(DAY, order_date, shipped_date) > 2
+
+
+SELECT	order_id, order_date, shipped_date, DATEDIFF(DAY, order_date, shipped_date) as df
+FROM	sale.orders
+WHERE	DATEDIFF(DAY, order_date, shipped_date) > 2
+
+--------//////////////////////////////
+
+
+----STRING DATA TYPES & FUNCTIONS
+
+
+SELECT cast ('Clarusway' as char(20))
+Clarusway           
+
+SELECT cast ('Clarusway' as varchar(20))       
+Clarusway
+
+
+---LEN, CHARINDEX, PATINDEX
+
+SELECT LEN ('Clarusway')
+SELECT LEN ('Clarusway  ')
+SELECT LEN ('  Clarusway  ')
+SELECT CHARINDEX('r', 'Clarusway')
+SELECT CHARINDEX('a', 'Clarusway')
+SELECT CHARINDEX('a', 'Clarusway', 4)
+---
+
+SELECT PATINDEX('%way','Clarusway')
+SELECT PATINDEX('%_way','Clarusway')
+SELECT PATINDEX('way','Clarusway')
+SELECT PATINDEX('%way%','Clarusway')
+SELECT PATINDEX('%way_','Clarusway')
+SELECT PATINDEX('___rus%','Clarusway')
+-----------
+
+--LEFT, RIGHT, SUBSTRING
+
+SELECT LEFT ('Clarusway', 3)
+SELECT RIGHT ('Clarusway', 3)
+SELECT SUBSTRING ('Clarusway', 3,3)
+SELECT SUBSTRING ('Clarusway', 1,3)
+
+--LOWER, UPPER, STRING_SPILIT
+SELECT LOWER ('CLARUSWAY')
+SELECT UPPER ('Clarusway')
+
+SELECT *
+FROM	string_split('Hilmi,�zlen,Mateo,Richard,Owen', ',')
+
+---TRIM, LTRIM, RTRIM
+SELECT TRIM('%' from '%Clarusway%')
+SELECT TRIM('    Clarusway     ')
+SELECT LTRIM('     Clarusway    ')
+Clarusway    
+
+SELECT RTRIM('    Clarusway     ')
+    Clarusway
+----------------
+
+--clarusway kelimesinin ilk harfini b�y�k di�erleri k���k olacak �ekilde d�zenleyin.
+
+--upper
+--lower
+--subtring / left / right
+
+SELECT UPPER (LEFT('clarusway',1))
+SELECT LOWER (SUBSTRING('clarusway', 2, LEN('clarusway')))
+SELECT UPPER (LEFT('clarusway',1)) + LOWER (SUBSTRING('clarusway', 2, LEN('clarusway')))
+SELECT UPPER (LEFT('rICHARD',1)) + LOWER (SUBSTRING('rICHARD', 2, LEN('rICHARD')))
+-----
+
+--REPLACE, STR
+SELECT REPLACE('Clarusway', 'way', 'road')
+SELECT REPLACE('Clarus way', ' ', '')
+
+
+--CAST , CONVERT
+--'1.CAST ve CONVERT, programc�lar taraf�ndan bir veri t�r�n� di�erine d�n��t�rmek i�in kullan�lan iki SQL i�levidir.
+ --2. CAST i�levi ANSI standard�d�r ve D�N��T�RME i�levi SQL sunucusunun belirli bir i�leviyken di�er veritabanlar�nda kullan�m i�in uyumludur.
+ --3.CAST i�levi di�er veritabanlar�yla uyumlu oldu�undan, CONVERT i�levine k�yasla daha az �zelli�i olmas�na ra�men ta��nabilir olarak da tan�mlan�r.
+--Bu arada CONVERT i�levi, CAST i�levinin yapamad��� baz� �eyleri yapabilir.
+--Read more: Difference Between CAST and CONVERT | Difference Between http://www.differencebetween.net/technology/software-technology/difference-between-cast-and-convert-2/#ixzz7ipXDWOGI'
+
+SELECT CAST (10.658 AS INT)
+SELECT CAST ('10.658' AS VARCHAR(5))
+SELECT CAST (GETDATE() AS DATE)
+SELECT CAST ('20221021' AS DATE)
+SELECT CAST ('21001022' AS DATE)
+SELECT CAST ('21/12/2022' AS DATE)
+SELECT CONVERT(DATE, GETDATE())
+SELECT CONVERT(TIME, GETDATE())
+------
+
+SELECT CONVERT(VARCHAR, GETDATE(), 6)
+SELECT CONVERT(VARCHAR, CAST('2022-10-21' AS DATE), 6)
+SELECT CONVERT (DATE, '21 Oct 22', 6)
+----
+---ROUND, ISNULL
+
+SELECT ROUND(10.265, 2)
+SELECT ROUND(10.264, 2)
+SELECT CAST (ROUND(10.264, 2) AS NUMERIC (4,2))
+SELECT ROUND(10.265, 2, 0)
+SELECT ROUND(10.265, 2, 1)
+
+--'SQL Server daki bu i�lev, belirtilen ifadenin NULL olmas� durumunda verilen de�eri d�nd�rmek i�in kullan�l�r.
+--Ayr�ca, verilen ifadenin NULL olmamas� durumunda belirtilen ifadeyi d�nd�r�r.'
+SELECT ISNULL (NULL, 'MEHMET')
+SELECT ISNULL ('AHMET', 'MEHMET')
+
+SELECT phone, ISNULL(phone, 'NO PHONE') -- burada tel numaras� yoksa==> null ise 'No Phone' yazd�r�yor  
+FROM sale.customer						--Numara varsa numaray� getiriyor
+ORDER BY phone
+------
+
+
+--COALECSE, NULLIF, ISNUMERIC
+
+SELECT COALESCE(NULL, NULL, 5, 6)
+-- COALESCE() fonksiyonu, i�erisine yazd���n�z de�erlerdeki �LK NULL olmayan de�eri d�nd�r�r ve N say�da parametre alabilir.
+
+SELECT *, COALESCE(phone, email, city)
+FROM sale.customer
+order by phone, email 
+
+
+
+--NULLIF
+--Bu fonksiyon, verilen iki ifadenin e�it olup olmad���n� kontrol etmek i�in kullan�l�r.
+--Bu i�lev, verilen iki ifade e�itse NULL d�nd�r�r.
+--Bu i�lev, verilen iki ifade e�it de�ilse ilk ifadeyi d�nd�r�r.
+
+SELECT city, NULLIF(city, 'Buffalo')
+FROM	sale.customer
+order by city
+
+
+SELECT ISNUMERIC (1)
+
+SELECT ISNUMERIC ('5')
+
+
+SELECT ISNUMERIC ('Ali')
+
+
+-- How many customers have yahoo mail?
+
+SELECT email, PATINDEX('%@yahoo%', email)
+FROM	sale.customer
+where PATINDEX('%@yahoo%', email) > 0
+
+
+SELECT COUNT(DISTINCT customer_id)
+FROM	sale.customer
+where email like '%@yahoo%'
+
+
+
+SELECT COUNT(customer_id)
+FROM	sale.customer
+where PATINDEX('%@yahoo%', email) > 0
+
+-----------
+
+--Write a query that returns the characters before the '@' character in the email column.
+
+
+SELECT	email, LEFT (email, CHARINDEX('@', email)-1) -- mail isimlerini getirdi
+FROM	sale.customer
+
+
+--Add a new column to the customers table that contains the customers' contact information. 
+--If the phone is not null, the phone information will be printed, if not, the email information will be printed.
+--M��terilerin ileti�im bilgilerini i�eren m��teriler tablosuna yeni bir s�tun ekleyin.
+--Telefon bo� de�ilse, telefon bilgileri yazd�r�l�r, de�ilse e-posta bilgileri yazd�r�l�r.
+
+SELECT customer_id, first_name, last_name, phone, email,
+		COALESCE(phone, email) as contact,
+		ISNULL (phone, email) as contact2
+FROM	sale.customer
+
+
+----------------////------------------
+
+-- session 5
+
+
+SELECT *
+FROM product.category
+
+
+
+SELECT COUNT (DISTINCT category_id)
+FROM product.product
+
+
+
+---INNER JOIN
+
+-- Make a list of products showing the product ID, product name, category ID, and category name.
+-- �r�n kimli�ini, �r�n ad�n�, kategori kimli�ini ve kategori ad�n� g�steren �r�nlerin bir listesini yap�n.
+--1
+SELECT	product_id, 
+		product_name, 
+		product.category.category_id, 
+		category_name
+FROM	product.product
+		INNER JOIN
+		product.category
+		ON
+		product.product.category_id = product.category.category_id
+
+
+--2
+
+SELECT	product_id, 
+		product_name, 
+		product.category.category_id, 
+		category_name
+FROM	product.product
+		JOIN
+		product.category
+		ON
+		product.product.category_id = product.category.category_id
+
+
+--3
+
+SELECT	product_id, 
+		product_name, 
+		product.category.category_id, 
+		category_name
+FROM	product.product , product.category
+WHERE
+		product.product.category_id = product.category.category_id
+		AND		product_id>300
+
+
+--4
+
+SELECT	product_id, 
+		product_name, 
+		B.category_id, 
+		category_name
+FROM	product.product AS A , product.category B
+WHERE
+		A.category_id = B.category_id
+
+
+--List employees of stores with their store information.
+---Ma�aza �al��anlar�n� ma�aza bilgileriyle listeleyin.
+
+SELECT *
+FROM sale.staff
+
+
+SELECT *
+FROM sale.store
+
+
+SELECT	A.*, B.store_name
+FROM	sale.staff A, sale.store B
+WHERE	A.store_id = B.store_id
+
+-----------------------------------------====>>>>>>>>><<<<<<<<<<========----------------
+
+------ LEFT JOIN ------
+
+--Write a query that returns products that have never been ordered
+--Select product ID, product name, orderID
+
+
+SELECT *
+FROM	product.product
+
+
+SELECT *
+FROM	sale.order_item
+
+
+SELECT	DISTINCT A.product_id, A.product_name, B.product_id
+FROM	product.product A
+		LEFT JOIN
+		sale.order_item B
+		ON
+		A.product_id = B.product_id
+WHERE	B.product_id IS NULL
+ORDER BY B.product_id
+
+
+--Report the stock status of the products that product id greater than 310 in the stores.
+--Expected columns: product_id, product_name, store_id, product_id, quantity
+
+SELECT	COUNT (DISTINCT A.product_id)
+FROM	product.product A
+WHERE	A.product_id > 310
+
+
+
+SELECT	A.product_id, B.*
+FROM	product.product A, product.stock B
+WHERE	A.product_id > 310
+AND		A.product_id = B.product_id
+ORDER BY
+		A.product_id, B.store_id
+
+
+
+SELECT	COUNT (DISTINCT A.product_id)
+FROM	product.product A, product.stock B
+WHERE	A.product_id > 310
+AND		A.product_id = B.product_id
+
+
+
+SELECT	DISTINCT A.product_id, B.product_id
+FROM	product.product A
+		LEFT JOIN 
+		product.stock B
+		ON 
+		A.product_id = B.product_id
+WHERE	B.product_id > 310
+ORDER BY
+		B.product_id
+
+
+
+
+SELECT	DISTINCT A.product_id, B.*
+FROM	product.product A
+		LEFT JOIN 
+		product.stock B
+		ON 
+		A.product_id = B.product_id
+WHERE	A.product_id > 310
+ORDER BY
+		B.product_id
+
+
+------ RIGHT JOIN ------
+
+--Report (AGAIN WITH RIGHT JOIN) the stock status of the products that product id greater than 310 in the stores.
+
+--Expected columns: product_id, product_name, store_id, quantity
+
+
+SELECT	DISTINCT B.product_id, A.*
+FROM	product.stock A
+		RIGHT JOIN 
+		product.product B
+		ON 
+		A.product_id = B.product_id
+WHERE	B.product_id > 310
+ORDER BY
+		B.product_id
+
+
+---Report the order information made by all staffs.
+
+--Expected columns: staff_id, first_name, last_name, all the information about orders
+
+
+
+SELECT *
+FROM	sale.staff
+
+
+SELECT	COUNT (DISTINCT staff_id)
+FROM	SALE.orders
+
+
+
+SELECT	B.staff_id, first_name, last_name, A.*
+FROM	sale.orders A
+		RIGHT JOIN
+		sale.staff B
+		ON 
+		A.staff_id = B.staff_id
+ORDER BY
+		A.order_id, B.staff_id
+
+
+------ FULL OUTER JOIN ------
+
+--Write a query that returns stock and order information together for all products . Return only top 100 rows.
+
+--Expected columns: Product_id, store_id, quantity, order_id, list_price
+
+
+SELECT	COUNT (DISTINCT product_id)
+FROM	sale.order_item
+
+
+
+SELECT	COUNT (DISTINCT product_id)
+FROM	product.stock
+
+
+SELECT	DISTINCT A.product_id, B.*, C. order_id
+FROM	product.product A
+		FULL OUTER JOIN
+		product.stock B
+		ON
+		A.product_id = B.product_id
+		FULL OUTER JOIN
+		sale.order_item C
+		ON
+		A.product_id = C.product_id
+ORDER BY 
+		B.product_id, C.order_id
+
+
+
+------ CROSS JOIN ------
+
+/*
+In the stocks table, there are not all products held on the product table and you want to insert these products into the stock table.
+
+You have to insert all these products for every three stores with �0 (zero)� quantity.
+
+Write a query to prepare this data.
+
+*/
+
+
+78
+
+PRODUCT_ID		store_id		quantity
+1				1				0
+1				2					0
+1				3				0
+
+
+
+SELECT	DISTINCT A.store_id, B.product_id, 0 as quantity
+FROM	product.stock A
+		CROSS JOIN	
+		product.product B
+WHERE
+		B.product_id NOT IN (SELECT product_id FROM product.stock)
+
+
+SELECT *
+FROM	product.stock
+WHERE	 product_id = 512
+
+
+------ SELF JOIN ------
+
+--Write a query that returns the staff names with their manager names.
+--Expected columns: staff first name, staff last name, manager name
+
+
+SELECT	A.first_name AS staff_name, B.first_name AS manager_name
+FROM	sale.staff A 
+		LEFT JOIN
+		sale.staff B
+		ON
+		A.manager_id = B.staff_id
+
+--//////
+
+--Write a query that returns both the names of staff and the names of their 1st and 2nd managers
+
+
+SELECT	A.first_name as staff_name, 
+		B.first_name as first_manager, 
+		c.first_name as second_manager
+FROM	sale.staff A
+		LEFT JOIN
+		sale.staff B
+		ON
+		A.manager_id = B.staff_id
+		LEFT JOIN
+		sale.staff C
+		ON
+		B.manager_id = C.staff_id
+ORDER BY 3 DESC --ASC / DESC
+
+
+--------------------
+DROP VIEW v_sample1
+CREATE VIEW v_sample1 AS
+SELECT	 DISTINCT A.customer_id as cust_id, D.product_id
+FROM	 sale.customer A, sale.orders B, sale.order_item C, product.product D
+WHERE		A.customer_id = B.customer_id
+AND			B.order_id = C.order_id
+AND			C.product_id = D.product_id
+
+
+
+
+SELECT *
+FROM v_sample1
+
+
+-----------///////////////////////
+
+SELECT *
+FROM	sale.order_item
+
+
+
+---///////////////////
+
+--Write a query that returns the name of the streets, where the third character of the streets is numeric.
+--Sokaklar�n ���nc� karakterinin say�sal oldu�u sokaklar�n ad�n� d�nd�ren bir sorgu yaz�n.
+SELECT street, SUBSTRING(street, 3,1)
+FROM sale.customer
+WHERE	ISNUMERIC(SUBSTRING(street, 3,1)) = 1
+ORDER BY 2
+
+
+-----------------------------------------====>>>>>>>>><<<<<<<<<<========--------------------------------------------------
+-------------///////////////////////////////////////////////////////////////////////////////////////////////-------------
+-------------///////////////////////////////////////////////////////////////////////////////////////////////-------------
+-- SESS�ON 6
+
+
+--GROUPING OPERATIONS
+
+
+
+--HAVING
+' HAVING  toplama i�lemi sonucunda olu�turulacak yeni s�tun �zerinde filtreleme yapmak i�in kullan�l�r.'
+
+--Write a query that checks if any product id is duplicated in product table.
+SELECT*
+FROM	product.product
+
+SELECT	COUNT (DISTINCT product_id), COUNT (product_id)
+FROM	product.product
+
+
+SELECT	COUNT(*)
+FROM	product.product
+
+
+SELECT	COUNT(1)
+FROM	product.product
+
+
+SELECT	product_id, COUNT (*) cnt_rows
+FROM	product.product
+GROUP BY
+		product_id
+HAVING
+		 COUNT (*) > 1 
+		 -- COUNT (*) = 1 
+
+
+SELECT	product_name, COUNT (*) cnt_rows
+FROM	product.product
+GROUP BY
+		product_name
+HAVING
+		 COUNT (*) > 1
+
+
+--///////
+
+--Write a query that returns category ids with conditions max list price above 4000 or a min list price below 500.
+--Maksimum liste fiyat� 4000'in �zerinde veya minimum liste fiyat� 500'�n alt�nda olan ko�ullara sahip
+--kategori kimliklerini d�nd�ren bir sorgu yaz�n.
+
+SELECT	category_id, MAX(list_price) AS MAX_PROD_PRICE, MIN(list_price) MIN_PROD_PRICE
+FROM	product.product
+GROUP BY 
+		category_id
+HAVING
+		MAX(list_price) > 4000 
+		OR
+		MIN(list_price) < 500
+
+
+--SELECT	category_id, MAX(list_price) AS MAX_PROD_PRICE, MIN(list_price) MIN_PROD_PRICE
+--FROM	product.product
+--GROUP BY 
+--		category_id
+--HAVING
+--		MAX(list_price) > 4000 
+--		AND
+--		MIN(list_price) < 500
+
+
+---/////
+
+--Find the average product prices of the brands. Display brand name and average prices in descending order.
+--Markalar�n ortalama �r�n fiyatlar�n� bulun. Marka ad�n� ve ortalama fiyatlar� azalan s�rada g�r�nt�leyin.
+
+SELECT	B.brand_id, B.brand_name, AVG(list_price) avg_price
+FROM	product.product A, product.brand B
+WHERE	A.brand_id = B.brand_id
+GROUP BY	
+		B.brand_name, B.brand_id
+ORDER BY 
+		3 DESC
+
+
+
+SELECT	B.brand_id, B.brand_name, AVG(list_price) avg_price
+FROM	product.product A, product.brand B
+WHERE	A.brand_id = B.brand_id
+GROUP BY	
+		 B.brand_id, B.brand_name 
+ORDER BY 
+		2 DESC
+
+
+--SELECT	TOP 3 B.brand_name, AVG(list_price) avg_price
+--FROM	product.product A, product.brand B
+--WHERE	A.brand_id = B.brand_id
+--GROUP BY	
+--		B.brand_name
+--ORDER BY 
+--		2 DESC
+
+
+
+
+------------///////////////////
+
+
+--Write a query that returns the list of brands whose average product prices are more than 1000
+--Ortalama �r�n fiyatlar� 1000'den fazla olan markalar�n listesini d�nd�ren bir sorgu yaz�n
+
+
+SELECT	B.brand_id, B.brand_name, AVG(list_price) avg_price
+FROM	product.product A, product.brand B
+WHERE	A.brand_id = B.brand_id
+GROUP BY	
+		B.brand_name, B.brand_id
+HAVING 
+		AVG(list_price) > 1000
+ORDER BY 
+		3 DESC
+
+
+--////////
+
+--Write a query that returns the list of each order id and that order's total net price 
+--(please take into consideration of discounts and quantities)
+
+--Her sipari� kimli�inin listesini ve o sipari�in toplam net fiyat�n� d�nd�ren bir sorgu yaz�n
+--(indirimleri ve adetleri l�tfen dikkate al�n�z)
+
+(quantity*list_price*(1-discount))
+
+
+
+SELECT *, (quantity*list_price*(1-discount)) prod_net_amount
+FROM sale.order_item
+
+
+
+SELECT	order_id, SUM(quantity*list_price*(1-discount)) order_net_amount
+FROM	sale.order_item
+GROUP BY
+		order_id
+
+
+------------------/////////////////
+
+
+--Write a query that returns monthly order counts of the States.
+--Devletlerin ayl�k sipari� say�lar�n� d�nd�ren bir sorgu yaz�n.
+
+SELECT	[state], YEAR(B.order_date) ord_year, MONTH(B.order_date) ord_month, COUNT (B.order_id) cnt_order
+FROM	SALE.customer A, sale.orders B
+WHERE	A.customer_id = B.customer_id
+GROUP BY
+		[state], YEAR(B.order_date), MONTH(B.order_date) 
+ORDER BY
+		1, 2,3
+
+
+
+----------------//////////
+
+--Summary Table
+
+--SELECT	C.brand_name, D.category_name, B.model_year, 
+--		ROUND (SUM (A.list_price*A.quantity*(1-A.discount)), 0) total_sales_price
+--INTO	sale.sales_summary
+--FROM	sale.order_item A, product.product B, product.brand C, product.category D
+--WHERE	A.product_id = B.product_id
+--AND		B.brand_id = C.brand_id
+--AND		B.category_id = D.category_id
+--GROUP BY
+--		C.brand_name, D.category_name, B.model_year
+
+
+
+--select *
+--from	sale.sales_summary
+
+--DROP TABLE sale.sales_summary
+----------------//////////
+
+CREATE VIEW sale.sales_view AS
+SELECT	C.brand_name, D.category_name, B.model_year, 
+		ROUND (SUM (A.list_price*A.quantity*(1-A.discount)), 0) total_sales_price
+FROM	sale.order_item A, product.product B, product.brand C, product.category D
+WHERE	A.product_id = B.product_id
+AND		B.brand_id = C.brand_id
+AND		B.category_id = D.category_id
+GROUP BY
+		C.brand_name, D.category_name, B.model_year
+
+
+SELECT *
+FROM	sale.sales_view
+
+
+--GRUPING SETS
+
+'--GROUPING SETS operat�r�, aggregation i�lemlerinde grupland�r�lm�� s�tun gruplar�n� ifade eder.'
+
+--1. Calculate the total sales price.
+
+
+
+SELECT	SUM(total_sales_price)
+FROM	sale.sales_view
+
+
+--2. Calculate the total sales price of the brands
+
+
+SELECT	brand_name, SUM(total_sales_price)
+FROM	sale.sales_view
+GROUP BY
+		brand_name
+
+
+--3. Calculate the total sales price of the categories
+
+SELECT	category_name, SUM(total_sales_price)
+FROM	sale.sales_view
+GROUP BY
+		category_name
+
+
+--4. Calculate the total sales price by brands and categories.
+
+
+SELECT	category_name, brand_name, SUM(total_sales_price)
+FROM	sale.sales_view
+GROUP BY
+		category_name, brand_name
+ORDER BY
+		1,2
+
+
+---
+
+SELECT	brand_name, category_name, SUM(total_sales_price)
+FROM	sale.sales_view
+GROUP BY
+		GROUPING SETS (
+						(),
+						(brand_name),
+						(category_name),
+						(brand_name, category_name)
+				
+		)
+ORDER BY
+		1,2
+
+
+----ROLLUP
+'-- ROLLUP operat�r�, her s�tun ifadesi kombinasyonu i�in bir grup olu�turur. 
+Sa�dan sola s�ral� olarak parantez i�inde yaz�lan s�tun adlar�ndan birer birer ��kararak gruplama 
+kombinasyonlar� yapar. Bu nedenle, s�tunlar�n yaz�ld��� s�ra �nemlidir.'
+
+SELECT	brand_name, model_year, category_name, SUM(total_sales_price)
+FROM	sale.sales_view
+GROUP BY
+		ROLLUP(brand_name, model_year, category_name)
+ORDER BY
+		category_name desc, model_year desc, brand_name desc
+
+
+----Cube
+'CUBE operat�r�, se�me operat�r�nde belirtilen t�m alanlar i�in t�m olas� gruplama kombinasyonlar�n� yapar.
+S�tunlar�n yaz�ld��� s�ra �nemli de�ildir.'
+
+SELECT	brand_name, model_year, category_name, SUM(total_sales_price)
+FROM	sale.sales_view
+GROUP BY
+		CUBE (brand_name, model_year, category_name)
+ORDER BY
+		category_name desc, model_year desc, brand_name desc
+
+
+--------- PIVOT ----------
+--PIVOT operat�r�, raporlama i�lemlerinde pivot tablodaki sat�rlar�n alanlara d�n��t�r�lmesini sa�lar.
+--Grupland�rmaya dahil edilen her s�tun i�in toplama i�lemi tekrarlan�r ve ayr� bir alan olu�turulur.
+--SYNTAX 
+SELECT <non-pivoted column>,  
+    [first pivoted column] AS <column name>,  
+    [second pivoted column] AS <column name>,  
+    ...  
+    [last pivoted column] AS <column name>  
+FROM  
+    (<SELECT query that produces the data>)   
+    AS <alias for the source query>  
+PIVOT  
+(  
+    <aggregation function>(<column being aggregated>)  
+FOR   
+[<column that contains the values that will become column headers>]   
+    IN ( [first pivoted column], [second pivoted column],  
+    ... [last pivoted column])  
+) AS <alias for the pivot table>  
+<optional ORDER BY clause>;  
+---------------------------------
+
+
+--Question: Write a query using summary table that returns the total turnover from each category by model year. (in pivot table format)
+--Soru: Model y�l�na g�re her kategoriden toplam ciroyu d�nd�ren �zet tablosunu kullanarak bir sorgu yaz�n. (pivot tablo format�nda)
+
+SELECT	category_name, model_year, SUM(total_sales_price)
+FROM	sale.sales_view
+GROUP BY
+		category_name, model_year
+		
+
+SELECT *
+FROM
+		(
+		SELECT	category_name, model_year, total_sales_price
+		FROM	sale.sales_view
+		) AS A		
+PIVOT
+(
+	SUM(total_sales_price)
+	FOR model_year
+	IN ([2018], [2019], [2021])
+
+) AS PVT_TABLE
+
+
+--SELECT *
+--FROM
+--(
+--SELECT	model_year, total_sales_price
+--FROM	sale.sales_view
+--) A		
+--PIVOT
+--(
+--	SUM(total_sales_price)
+--	FOR model_year
+--	IN ([2018], [2019], [2021])
+
+--) AS PVT_TABLE
+
+--------
+
+--DO�RU SONU� DE��L, BRAND_NAME DAH�L OLDU.
+
+--SELECT category_name, [2018], [2019], [2021]
+--FROM
+--sale.sales_view	
+--PIVOT
+--(
+--	SUM(total_sales_price)
+--	FOR model_year
+--	IN ([2018], [2019], [2021])
+
+--) AS PVT_TABLE
+
+
+-------------------
+
+
+SELECT *
+INTO #sale_v
+FROM
+(
+SELECT	category_name, model_year, total_sales_price
+FROM	sale.sales_view
+) AS A
+
+
+SELECT *
+FROM #sale_v
+PIVOT
+(
+	SUM(total_sales_price)
+	FOR model_year
+	IN ([2018], [2019], [2021])
+
+) AS PVT_TABLE
+
+
+
+-- sesion-7
+
+---Session 7 Subqueries & CTE's
+
+---Pivot Example
+
+-- 2 g�nden ge� kargolanan sipari�lerin g�nlere g�re da��l�m�n� pivot format�nda g�steriniz.
+
+
+SELECT	order_date, order_id
+FROM	sale.orders
+WHERE	DATEDIFF(DAY, order_date, shipped_date) > 2
+ORDER BY
+		1,2
+
+
+
+SELECT	DATENAME(WEEKDAY , order_date) day_of_week, order_id
+FROM	sale.orders
+WHERE	DATEDIFF(DAY, order_date, shipped_date) > 2
+
+
+
+SELECT *
+FROM
+	(
+	SELECT	DATENAME(WEEKDAY , order_date) day_of_week, order_id
+	FROM	sale.orders
+	WHERE	DATEDIFF(DAY, order_date, shipped_date) > 2
+	) AS A
+PIVOT
+(
+COUNT(order_id)
+FOR day_of_week
+IN ([Sunday] , [Monday] ,[Tuesday] ,[Wednesday] ,[Thursday] ,[Friday] ,[Saturday])
+) AS PVT
+
+
+--------------/////////////////////
+
+--------SUBQUERY
+
+'SELECT FROM WHERE i�inde kullan�labilir
+Alt sorguyu kullan�rken baz� kurallar vard�r:
+Bir alt sorgu parantez i�ine al�nmal�d�r.
+Bir  ORDER BY yan t�mcenin bir alt sorguda kullan�lmas�na izin verilmez.
+BETWEEN Operat�r bir alt sorgu ile kullan�lamaz . BETWEEN Ancak alt sorgu i�inde kullanabilirsiniz'
+
+------ SINGLE ROW SUBQUERIES ------
+-- Tek sat�rl� alt sorgular, yaln�zca bir s�tunlu bir sat�r d�nd�r�r 
+-- tek sat�rl� operat�rlerle kullan�l�r: =, >, >=, <=, <>, !=  
+
+
+----///////
+
+
+--Write a query that shows all employees in the store where Davis Thomas works.
+-- --Davis Thomas'�n �al��t��� ma�azadaki t�m �al��anlar� g�steren bir sorgu yaz�n.
+
+SELECT *
+FROM	sale.staff
+WHERE	store_id = (
+					SELECT	store_id
+					FROM	sale.staff
+					WHERE	first_name = 'Davis'
+					AND		last_name = 'Thomas'
+					)
+
+-- /////////
+
+-- Write a query that shows the employees for whom Charles Cussona is a first-degree manager. 
+--(To which employees are Charles Cussona a first-degree manager?)
+
+-- Charles Cussona'n�n birinci dereceden y�netici oldu�u �al��anlar� g�steren bir sorgu yaz�n.
+--(Charles Cussona hangi �al��anlar i�in birinci derece y�neticidir?)
+
+SELECT *
+FROM	sale.staff
+WHERE	manager_id = (
+						SELECT	staff_id
+						FROM	sale.staff
+						WHERE	first_name = 'Charles'
+						AND		last_name = 'Cussona'
+						)
+
+-- ///////////////
+
+
+-- Write a query that returns the customers located where �The BFLO Store' is located.
+
+SELECT first_name, last_name, city
+FROM [sale].[customer]
+WHERE city = (
+				SELECT  city
+				FROM [sale].[store]
+				WHERE store_name = 'The BFLO Store'
+			)
+
+
+--//////
+
+--Write a query that returns the list of products that are more expensive than the product named 'Pro-Series 49-Class Full HD Outdoor LED TV (Silver)'
+--'Pro-Serisi' adl� �r�nden daha pahal� olan �r�nlerin listesini d�nd�ren bir sorgu yaz�n
+
+SELECT product_id, product_name, model_year, list_price
+FROM    [product].[product]
+WHERE list_price > (
+					SELECT list_price
+					FROM product.product
+					WHERE product_name = 'Pro-Series 49-Class Full HD Outdoor LED TV (Silver)'
+						)
+
+
+------ MULTIPLE ROW SUBQUERIES ------
+--Birden �ok sat�rl� alt sorgular, sat�r k�melerini d�nd�r�r 
+--ve IN, NOT IN, ANY, ALL gibi �ok sat�rl� operat�rlerle birlikte kullan�l�r .
+
+--/////////////////
+
+
+-- Write a query that returns customer first names, last names and order dates. 
+-- The customers who are order on the same dates as Laurel Goldammer.
+
+-- M��teri adlar�n�, soyadlar�n� ve sipari� tarihlerini d�nd�ren bir sorgu yaz�n.
+-- Laurel Goldammer ile ayn� tarihlerde sipari� veren m��teriler.
+
+-- i� sorgudan gelen tarihlere g�re d�� sorgu filtreleme yapt�  
+SELECT	DISTINCT B.first_name , B.last_name , A.order_date
+FROM	SALE.orders A, sale.customer B
+WHERE	A.order_date IN (
+						SELECT	A.order_date
+						FROM	SALE.orders A, sale.customer B
+						WHERE	A.customer_id = B.customer_id
+						AND		B.first_name = 'Laurel'
+						AND		B.last_name = 'Goldammer'
+						)
+AND		A.customer_id = B.customer_id
+ORDER BY order_date
+
+----
+
+SELECT	DISTINCT B.first_name , B.last_name , A.order_date
+FROM	SALE.orders A
+		INNER JOIN 
+		sale.customer B
+		ON
+		A.customer_id = B.customer_id
+WHERE	A.order_date IN (
+						SELECT	A.order_date
+						FROM	SALE.orders A, sale.customer B
+						WHERE	A.customer_id = B.customer_id
+						AND		B.first_name = 'Laurel'
+						AND		B.last_name = 'Goldammer'
+						)
+ORDER BY order_date
+
+
+-------------////////////////
+
+
+--List the products that ordered in the last 10 orders in Buffalo city.
+-- Buffalo �ehrinde son 10 sipari�te sipari� edilen �r�nleri listeleyin.
+
+SELECT	DISTINCT A.product_name
+FROM	product.product A, sale.order_item B
+WHERE	A.product_id = B.product_id
+AND		B.order_id IN (
+						SELECT	TOP 10 B.order_id
+						FROM	sale.customer A, sale.orders B
+						WHERE	city = 'Buffalo'
+						AND		A.customer_id = B.customer_id
+						ORDER BY	
+								order_id DESC
+						)
+
+---
+
+SELECT	DISTINCT A.product_name
+FROM	product.product A, sale.order_item B,
+		(
+		SELECT	TOP 10 B.order_id
+		FROM	sale.customer A, sale.orders B
+		WHERE	city = 'Buffalo'
+		AND		A.customer_id = B.customer_id
+		ORDER BY	
+				order_id DESC
+		) AS C
+WHERE	A.product_id = B.product_id
+AND		B.order_id  = C.order_id
+
+
+-----
+
+---Buffalo �ehrinde sipari� verilen �r�nleri bulunuz
+
+SELECT	top 10 D.product_name
+FROM	sale.customer A, sale.orders B, sale.order_item C, product.product D
+WHERE	A.customer_id = B.customer_id 
+AND		B.order_id = C.order_id 
+AND		C.product_id = D.product_id
+AND		A.city = 'Buffalo'
+ORDER BY 
+		B.order_id DESC
+
+----
+
+
+
+
+------///////////////
+
+
+--Write a query that returns the product_names and list price that were made in 2021. 
+--(Exclude the categories that match Game, gps, or Home Theater )
+
+-- 2021'de yap�lan �r�n_adlar�n� ve liste fiyat�n� d�nd�ren bir sorgu yaz�n.
+--(Oyun, gps veya Ev Sinemas� ile e�le�en kategorileri hari� tutun)
+
+SELECT	product_name, list_price
+FROM	product.product
+WHERE	model_year = 2021
+AND		category_id NOT IN (
+							SELECT	category_id
+							FROM	product.category
+							WHERE	category_name IN ('Game', 'gps', 'Home Theater')
+							)
+
+----
+
+SELECT	product_name, list_price
+FROM	product.product A, product.category B
+WHERE	model_year = 2021
+AND		a.category_id = B.category_id
+AND		B.category_name NOT IN ('Game', 'gps', 'Home Theater')
+
+----------
+
+--Write a query that returns the list of product names that were made in 2020 
+--and whose prices are higher than maximum product list price of Receivers Amplifiers category.
+
+-- 2020 model olup Receivers Amplifiers kategorisindeki en pahal� �r�nden daha pahal� �r�nleri listeleyin.
+-- �r�n ad�, model_y�l� ve fiyat bilgilerini y�ksek fiyattan d���k fiyata do�ru s�ralay�n�z.
+
+
+SELECT product_name, list_price
+FROM	product.product
+WHERE	model_year = 2020
+AND		list_price > (
+						SELECT	TOP 1 A.list_price
+						FROM	product.product A, product.category B
+						WHERE	A.category_id = B.category_id
+						AND		B.category_name = 'Receivers Amplifiers'
+						ORDER BY 
+								list_price desc
+						)
+
+---
+
+
+SELECT product_name, list_price
+FROM	product.product
+WHERE	model_year = 2020
+AND		list_price > (
+						SELECT	MAX (A.list_price)
+						FROM	product.product A, product.category B
+						WHERE	A.category_id = B.category_id
+						AND		B.category_name = 'Receivers Amplifiers'
+						)
+
+---
+
+SELECT product_name, list_price
+FROM	product.product
+WHERE	model_year = 2020
+AND		list_price > ALL (
+						SELECT	A.list_price
+						FROM	product.product A, product.category B
+						WHERE	A.category_id = B.category_id
+						AND		B.category_name = 'Receivers Amplifiers'
+						)
+--///////
+
+-- Write a query that returns the list of product names that were made in 2020 
+-- and whose prices are higher than minimum product list price of Receivers Amplifiers category.
+
+-- Receivers Amplifiers kategorisindeki �r�nlerin herhangi birinden y�ksek fiyatl� �r�nleri listeleyin.
+-- �r�n ad�, model_y�l� ve fiyat bilgilerini y�ksek fiyattan d���k fiyata do�ru s�ralay�n�z.
+
+
+
+SELECT product_name, list_price
+FROM	product.product
+WHERE	model_year = 2020
+AND		list_price > ANY (
+						SELECT	A.list_price
+						FROM	product.product A, product.category B
+						WHERE	A.category_id = B.category_id
+						AND		B.category_name = 'Receivers Amplifiers'
+						)
+
+---------CORRELATED SUBQUERIES
+--Bir alt sorgu, d�� sorgudaki s�tunlara ba�vuruyorsa veya ba�ka bir deyi�le, 
+--bir alt sorgu d�� sorgudaki de�erleri kullan�yorsa, bu alt sorguya ili�kili alt sorgu denir. 
+
+
+
+--EXISTS / NOT EXISTS
+
+---EXISTS operat�r�, SELECT deyimi taraf�ndan d�nd�r�len sat�r say�s�n� k�s�tlamak i�in kullan�l�r.
+--Alt sorgu b�y�k hacimli kay�tlar� taramay� gerektiriyorsa, tek bir kay�t e�le�tirilir e�le�mez
+--alt sorgu y�r�tmesini durdurmak,genel sorgu yan�t s�resini b�y�k �l��de h�zland�rabilir.'
+
+'NOT EXISTS operat�r�, temel al�nan alt sorgu hi�bir kay�t d�nd�rmezse true de�erini d�nd�r�r.
+Ancak, i� alt sorgu taraf�ndan tek bir kay�t e�le�tirilirse,
+NOT EXISTS operat�r� false d�nd�r�r ve alt sorgu y�r�tmesi durdurulabilir.'
+
+SELECT *
+FROM	sale.customer
+WHERE	EXISTS (SELECT 1)
+
+
+SELECT *
+FROM	sale.customer
+WHERE	NOT EXISTS (SELECT 1)
+
+---
+SELECT *
+FROM	sale.customer
+WHERE	EXISTS (
+				SELECT 4
+				FROM	sale.orders
+				WHERE	order_date > '2020-01-01'
+				)
+
+---
+SELECT *
+FROM	sale.customer
+WHERE	EXISTS (
+				SELECT 4
+				FROM	sale.orders
+				WHERE	order_date > '2022-01-01'
+				)
+
+
+---
+SELECT *
+FROM	sale.customer
+WHERE	NOT EXISTS (
+					SELECT 4
+					FROM	sale.orders
+					WHERE	order_date > '2020-01-01'
+					)
+
+---
+SELECT *
+FROM	sale.customer
+WHERE	NOT EXISTS (
+					SELECT 4
+					FROM	sale.orders
+					WHERE	order_date > '2022-01-01'
+					)
+
+-----
+
+
+SELECT *
+FROM	sale.customer A
+WHERE	EXISTS (
+				SELECT *
+				FROM	sale.orders B
+				WHERE	order_date > '2020-01-01'
+				AND		A.customer_id = B.customer_id
+				)
+
+SELECT *
+FROM	sale.customer A
+WHERE	customer_id IN (
+				SELECT customer_id
+				FROM	sale.orders B
+				WHERE	order_date > '2020-01-01'
+				)
+
+
+----
+
+SELECT *
+FROM	sale.customer A
+WHERE	NOT EXISTS (
+						SELECT	1
+						FROM	sale.orders B
+						WHERE	order_date > '2020-01-01'
+						AND		A.customer_id = B.customer_id
+						)
+
+
+
+
+
+
+
+--Write a query that returns a list of States where 'Apple - Pre-Owned iPad 3 - 32GB - White' product is not ordered
+-- 'Apple - Pre-Owned iPad 3 - 32GB - White' isimli �r�n�n sipari� verilmedi�i state' leri d�nd�ren bir sorgu yaz�n�z. 
+--(m��terilerin state' leri �zerinden)
+
+
+SELECT	DISTINCT D.state
+FROM	product.product A, sale.order_item B, sale.orders C, sale.customer D
+WHERE	A.product_id = B.product_id
+AND		B.order_id = C.order_id
+AND		C.customer_id = D.customer_id
+AND		A.product_name = 'Apple - Pre-Owned iPad 3 - 32GB - White'
+
+
+
+SELECT	DISTINCT state
+FROM	sale.customer X
+WHERE	NOT EXISTS (
+					SELECT 1
+					FROM	product.product A, sale.order_item B, sale.orders C, sale.customer D
+					WHERE	A.product_id = B.product_id
+					AND		B.order_id = C.order_id
+					AND		C.customer_id = D.customer_id
+					AND		A.product_name = 'Apple - Pre-Owned iPad 3 - 32GB - White'
+					AND		X.state = D.state
+					)
+---
+
+SELECT	DISTINCT state
+FROM	sale.customer X
+WHERE	X.state NOT IN (
+							SELECT	D.state
+							FROM	product.product A, sale.order_item B, sale.orders C, sale.customer D
+							WHERE	A.product_id = B.product_id
+							AND		B.order_id = C.order_id
+							AND		C.customer_id = D.customer_id
+							AND		A.product_name = 'Apple - Pre-Owned iPad 3 - 32GB - White'
+					)
+
+
+----///////////////////////////
+
+
+--Write a query that returns stock information of the products in Davi techno Retail store. 
+--The BFLO Store hasn't  got any stock of that products.
+
+--Davi techno Retail ma�azas�ndaki �r�nlerin stok bilgilerini d�nd�ren bir sorgu yaz�n.
+--BFLO Ma�azas�nda bu �r�nlerin sto�u yok. 
+
+SELECT	DISTINCT product_id
+FROM	product.stock A, sale.store B
+WHERE	B.store_name = 'Davi techno Retail'
+AND		A.store_id = B.store_id
+AND		NOT EXISTS (
+					SELECT	DISTINCT product_id
+					FROM	product.stock C, sale.store D
+					WHERE	C.store_id = D.store_id
+					AND		D.store_name = 'The BFLO Store'
+					AND		quantity > 0
+					AND		A.product_id = C.product_id
+					)
+
+----
+
+
+SELECT	DISTINCT product_id
+FROM	product.stock A, sale.store B
+WHERE	B.store_name = 'Davi techno Retail'
+AND		A.store_id = B.store_id
+AND		EXISTS (
+					SELECT	DISTINCT product_id
+					FROM	product.stock C, sale.store D
+					WHERE	C.store_id = D.store_id
+					AND		D.store_name = 'The BFLO Store'
+					AND		quantity = 0
+					AND		A.product_id = C.product_id
+					)
+
+
+--Subquery in SELECT Statement
+
+--Write a query that creates a new column named "total_price" calculating the total prices of the products on each order.
+-- -Her sipari�te �r�nlerin toplam fiyatlar�n� hesaplayarak "toplam_fiyat" ad�nda yeni bir s�tun olu�turan bir sorgu yaz�n.
+
+SELECT	order_id, product_id, list_price, 
+		(
+			SELECT	AVG(list_price)
+			FROM	sale.order_item
+		)
+FROM	sale.order_item
+
+----
+
+
+SELECT	order_id, product_id, list_price, 
+		(
+			SELECT	SUM(list_price)
+			FROM	sale.order_item A
+			WHERE	A.order_id = B.order_id
+		)
+FROM	sale.order_item B
+
+
+---
+
+SELECT	order_id, product_id, list_price, 
+		(
+			SELECT	AVG(list_price)
+			FROM	sale.order_item A
+			WHERE	A.order_id = B.order_id
+		)
+FROM	sale.order_item B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
